@@ -2,9 +2,10 @@ from ftplib import all_errors
 import numpy as np
 import random
 
+
 class Gen3x3:
 
-    #constructor de la clase Gen3x3
+    #---constructor de la clase Gen3x3---
     def __init__(self):
         
         
@@ -12,8 +13,6 @@ class Gen3x3:
         #self.fitnees = []
         #np.random.seed(0)
         self.init = True
-        self.coeficientes = None
-        self.independientes = None
         self.populationSize = 0
         self.varSize = 0 
         self.varRange = []
@@ -32,7 +31,7 @@ class Gen3x3:
         
 #-------------------------------------------------------------------------------------------------------------------------------------        
     
-    #Inicializar poblacion inicial con valores random
+    #---Inicializar poblacion inicial con valores random---
     def initPob(self):
 
         #np.random.seed(0)
@@ -43,7 +42,7 @@ class Gen3x3:
     
 #-------------------------------------------------------------------------------------------------------------------------------------           
     
-    #Ordenar una matriz o lista, con dependiendo de otra matriz
+    #---Ordenar una matriz o lista, con dependiendo de otra matriz---
     def sort(self,independentList,dependentList):
         
         independentList = np.array(independentList)
@@ -56,19 +55,19 @@ class Gen3x3:
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
-    #Llenado de la lista fitness
+    #---Llenado de la lista fitness---
     def fitness(self,objetivo):
         if self.init:
             for genotipo in self.poblacion:
-                self.fitList.append(objetivo(genotipo,self.coeficientes,self.independientes))
+                self.fitList.append(objetivo(genotipo))
                 self.init = False
         else:
             for genotipo in self.tempPob:
-                self.tempFitList.append(objetivo(genotipo,self.coeficientes,self.independientes))
+                self.tempFitList.append(objetivo(genotipo))
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
-    #Seleccion por torneo, organizados de mayor a menor
+    #---Seleccion por torneo, organizados de mayor a menor---
     def tounament(self):
         
         individuo = []
@@ -92,22 +91,22 @@ class Gen3x3:
                 
                 for h in individuo:
                     if np.array_equal(self.poblacion[aux], h) == False:
-                        print('DIFERENTESS')
+                        # print('DIFERENTESS')
                         continue
                     else:
                         while np.array_equal(self.poblacion[aux], h): # <------AQUI ESTA EL ERROR COMPARACION DE LISTAS O ARREGLOS
-                            print(f'entre al while equal con aux {aux}')
+                            # print(f'entre al while equal con aux {aux}')
                             aux = random.randint(0,rows-1)
-                            print(f'sali al while equal con aux {aux}')
+                            # print(f'sali al while equal con aux {aux}')
 
                 individuo.append(self.poblacion[aux])
                 fit.append(self.fitList[aux])
-                print(f'ERORRRRRRRRRRR individuo {individuo}')
+                # print(f'ERORRRRRRRRRRR individuo {individuo}')
                 #print(f'fit {fit}')
 
         fit , individuo = self.sort(fit,individuo)
-        print(f'ERORRRRRRRRRRR SORTTTT individuo {individuo}')
-        print(f'ERORRRRRRRRRRR SORTTTT FITT {fit}')
+        # print(f'ERORRRRRRRRRRR SORTTTT individuo {individuo}')
+        # print(f'ERORRRRRRRRRRR SORTTTT FITT {fit}')
 
         # aux = random.randint(0,rows-1)
         # if np.array_equal(self.poblacion[aux], individuo[0]) == False:
@@ -127,7 +126,7 @@ class Gen3x3:
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
-    #Seleccion por elitismo
+    #---Seleccion por elitismo---
     def elite(self):
         for i in range(0,self.padres):
             self.tempPob.append(self.poblacion[i])
@@ -135,58 +134,58 @@ class Gen3x3:
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
-    #Loop del algoritmo genetico
+    #---Loop del algoritmo genetico---
     def start(self):
         h=0
         self.fitness(self.objetivo)
         self.fitList, self.poblacion = self.sort(self.fitList,self.poblacion)
-        print(self.fitList)
-        print(self.poblacion)
-        print(f'\nfitness: {self.fitList}')
+        # print(self.fitList)
+        # print(self.poblacion)
+        # print(f'\nfitness: {self.fitList}')
 
         while self.fitList[0] > self.presicion and h < self.epocas:
             
             count = 0
             self.elite()
-            print(f'poblacion temporal en CONSTRUCCION: \n {self.tempPob} \n')
+            # print(f'poblacion temporal en CONSTRUCCION: \n {self.tempPob} \n')
             while len(self.tempPob) < len(self.poblacion):
                 count = count +1
                 fit,individuo = self.tounament()
 
                 if random.random() <= self.pc:
-                    print('fit antes del cruce: ')
-                    print(fit)
-                    print()
+                    # print('fit antes del cruce: ')
+                    # print(fit)
+                    # print()
                     fit ,individuo = self.cruce(individuo)
-                    print('fit despues del cruce: ')
-                    print(fit)
-                    print()
+                    # print('fit despues del cruce: ')
+                    # print(fit)
+                    # print()
                     if random.random() <= self.pm:
                         fit,individuo= self.mutacion(individuo,fit)
                 for i in range(0,len(fit)):
-                    print(f'IIIII {i}')
+                    # print(f'IIIII {i}')
                     self.tempPob.append(individuo[i])
                     self.tempFitList.append(fit[i])
-                print(f'poblacion temporal en CONSTRUCCION: \n {self.tempPob} \n')
+                # print(f'poblacion temporal en CONSTRUCCION: \n {self.tempPob} \n')
 
-            print('poblacion temporal:')
-            print(self.tempPob)
-            print(len(self.tempPob))
-            print(f'count {count}')
-            print()
+            # print('poblacion temporal:')
+            # print(self.tempPob)
+            # print(len(self.tempPob))
+            # print(f'count {count}')
+            # print()
 
             self.fitList, self.poblacion = self.sort(self.tempFitList,self.tempPob)
             #self.poblacion = np.array(self.tempPob)
             #self.fitList = self.tempFitList
-            print(f'termine epoca {h}, el fit y la poblacion actualizadas son las siguientes: ')
-            print(f'Poblacion: ')
-            print(self.poblacion)
-            print(len(self.poblacion))
-            print()
+            # print(f'termine epoca {h}, el fit y la poblacion actualizadas son las siguientes: ')
+            # print(f'Poblacion: ')
+            # print(self.poblacion)
+            # print(len(self.poblacion))
+            # print()
 
-            print(f'Fintess: ')
-            print(self.fitList)
-            print()
+            # print(f'Fintess: ')
+            # print(self.fitList)
+            # print()
 
             self.tempPob = []
             self.tempFitList = []
@@ -195,17 +194,18 @@ class Gen3x3:
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
+    #-----CRUCE----
     def cruce(self,individuo):
-        print('individuo antes del cruce')
-        print(individuo)
-        print()
+        # print('individuo antes del cruce')
+        # print(individuo)
+        # print()
 
         fit=[]
 
         punto = random.randint(0,len(individuo[0])-2)
         auxList = individuo.copy()
 
-        print(f'punto {punto} y lista auxiliar {auxList}\n')
+        # print(f'punto {punto} y lista auxiliar {auxList}\n')
         
         individuo[0][punto+1:] = auxList[1][punto+1:]
         individuo[1][punto+1:] = auxList[0][punto+1:]
@@ -225,17 +225,18 @@ class Gen3x3:
         fit.append(self.objetivo(individuo[1],self.coeficientes,self.independientes))
 
         fit , individuo = self.sort(fit,individuo)
-        print('individuo despues del cruce')
-        print(individuo)
-        print()
+        # print('individuo despues del cruce')
+        # print(individuo)
+        # print()
         return fit, individuo
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
+    #---MUTACION---
     def mutacion(self,individuos,fit):
-        print(f'individuo antes de mutado: {individuos}')
-        print(f'fit, antes de la mutacion : {fit}')
-        print()
+        # print(f'individuo antes de mutado: {individuos}')
+        # print(f'fit, antes de la mutacion : {fit}')
+        # print()
         individuo = random.randint(0,len(individuos)-1)
         alelo = random.randint(0,len(individuos[0])-1)
         mutado = random.uniform(self.varRange[0],self.varRange[1])
@@ -243,20 +244,20 @@ class Gen3x3:
         fit[individuo] = self.objetivo(individuos[individuo],self.coeficientes,self.independientes)
 
         fit , individuos = self.sort(fit,individuos)
-        print(f'individuo despues de mutado punto (individuo:{individuo}),(alelo:{alelo}) : {individuos}')
-        print(f'fit, luego de la mutacion : {fit}')
-        print()
+        # print(f'individuo despues de mutado punto (individuo:{individuo}),(alelo:{alelo}) : {individuos}')
+        # print(f'fit, luego de la mutacion : {fit}')
+        # print()
         return fit, individuos
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
-    #Representacion como string de los atributos de la clase
+    #---Representacion como string de los atributos de la clase---
     def __str__(self):
 
         str = [f'Variables del objeto gen3x3: \n',
-               f'Matriz coeficientes:\n {self.coeficientes} \n',
-               f'Matriz terminos independientes: \n{self.independientes} \n',
+            #    f'Matriz coeficientes:\n {self.coeficientes} \n',
+            #    f'Matriz terminos independientes: \n{self.independientes} \n',
                f'Matriz de poblacion: \n{self.poblacion}\n',
                f'Fitness: \n{self.fitList} \n',
                f'Rango de las variables: {self.varRange} \n',
