@@ -8,10 +8,6 @@ class Gen3x3:
     #---constructor de la clase Gen3x3---
     def __init__(self):
         
-        
-        #self.i,self.j = np.shape(self.coeficientes)
-        #self.fitnees = []
-        #np.random.seed(0)
         self.init = True
         self.populationSize = 0
         self.varSize = 0 
@@ -26,15 +22,14 @@ class Gen3x3:
         self.epocas = 0
         self.padres = 0
         self.objetivo = None
-        #self.genotipo = np.random.rand(10,3)*100
-        #self.epocas = epocas
+        self.h = 0 #conteo de epocas
+
         
 #-------------------------------------------------------------------------------------------------------------------------------------        
     
     #---Inicializar poblacion inicial con valores random---
     def initPob(self):
 
-        #np.random.seed(0)
         if len(self.varRange) == 2 and self.varSize > 0 and self.populationSize > 0:
             self.poblacion = self.varRange[0] +(self.varRange[1]-self.varRange[0]) * np.random.rand(self.populationSize,self.varSize)
         else:
@@ -72,56 +67,30 @@ class Gen3x3:
         
         individuo = []
         fit = []
-        #tempArray = zip(initPob, fitness)
         
         for i in range(0,self.padres):
 
             rows = self.poblacion.shape[0]
             aux = random.randint(0,rows-1)
-            #aux = int(np.random.choice(rows,size=1,replace=True))
-            #print(f'auxiliar {aux}')
 
             if individuo == []:
                 individuo.append(self.poblacion[aux])
                 fit.append(self.fitList[aux])
-                #print(f'individuo {individuo}')
-                #print(f'fit {fit}')
                 
             else:
                 
-                for h in individuo:
-                    if np.array_equal(self.poblacion[aux], h) == False:
-                        # print('DIFERENTESS')
+                for n in individuo:
+                    if np.array_equal(self.poblacion[aux], n) == False:
                         continue
                     else:
-                        while np.array_equal(self.poblacion[aux], h): # <------AQUI ESTA EL ERROR COMPARACION DE LISTAS O ARREGLOS
-                            # print(f'entre al while equal con aux {aux}')
+                        while np.array_equal(self.poblacion[aux], n):
                             aux = random.randint(0,rows-1)
-                            # print(f'sali al while equal con aux {aux}')
 
                 individuo.append(self.poblacion[aux])
                 fit.append(self.fitList[aux])
-                # print(f'ERORRRRRRRRRRR individuo {individuo}')
-                #print(f'fit {fit}')
 
         fit , individuo = self.sort(fit,individuo)
-        # print(f'ERORRRRRRRRRRR SORTTTT individuo {individuo}')
-        # print(f'ERORRRRRRRRRRR SORTTTT FITT {fit}')
-
-        # aux = random.randint(0,rows-1)
-        # if np.array_equal(self.poblacion[aux], individuo[0]) == False:
-        #     pass
-        # else:
-        #     while np.array_equal(self.poblacion[aux], individuo[0]): # <------AQUI ESTA EL ERROR COMPARACION DE LISTAS O ARREGLOS
-        #         print(f'entre al while equal con aux {aux}')
-        #         aux = random.randint(0,rows-1)
-        #         print(f'sali al while equal con aux {aux}')
-        # individuo[1] = self.poblacion[aux]
-        # fit[1]= self.fitList[aux]
-        # print(f'ERORRRRRRRRRRR222222 individuo {individuo}')
-        # print(f'ERORRRRRRRRRRR22222   FITTT22 {fit}')
-
-
+        
         return fit,individuo
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
@@ -136,117 +105,66 @@ class Gen3x3:
 
     #---Loop del algoritmo genetico---
     def start(self):
-        h=0
         self.fitness(self.objetivo)
         self.fitList, self.poblacion = self.sort(self.fitList,self.poblacion)
-        # print(self.fitList)
-        # print(self.poblacion)
-        # print(f'\nfitness: {self.fitList}')
+        print('Algoritmo Corriendo.....\n')
 
-        while self.fitList[0] > self.presicion and h < self.epocas:
+        while self.fitList[0] > self.presicion and self.h < self.epocas:
             
-            count = 0
+            if (self.h)%100 == 0:
+                    print('.........')
+
             self.elite()
-            # print(f'poblacion temporal en CONSTRUCCION: \n {self.tempPob} \n')
             while len(self.tempPob) < len(self.poblacion):
-                count = count +1
+
                 fit,individuo = self.tounament()
 
                 if random.random() <= self.pc:
-                    # print('fit antes del cruce: ')
-                    # print(fit)
-                    # print()
                     fit ,individuo = self.cruce(individuo)
-                    # print('fit despues del cruce: ')
-                    # print(fit)
-                    # print()
                     if random.random() <= self.pm:
                         fit,individuo= self.mutacion(individuo,fit)
                 for i in range(0,len(fit)):
-                    # print(f'IIIII {i}')
                     self.tempPob.append(individuo[i])
                     self.tempFitList.append(fit[i])
-                # print(f'poblacion temporal en CONSTRUCCION: \n {self.tempPob} \n')
-
-            # print('poblacion temporal:')
-            # print(self.tempPob)
-            # print(len(self.tempPob))
-            # print(f'count {count}')
-            # print()
 
             self.fitList, self.poblacion = self.sort(self.tempFitList,self.tempPob)
-            #self.poblacion = np.array(self.tempPob)
-            #self.fitList = self.tempFitList
-            # print(f'termine epoca {h}, el fit y la poblacion actualizadas son las siguientes: ')
-            # print(f'Poblacion: ')
-            # print(self.poblacion)
-            # print(len(self.poblacion))
-            # print()
-
-            # print(f'Fintess: ')
-            # print(self.fitList)
-            # print()
-
             self.tempPob = []
             self.tempFitList = []
 
-            h=h+1
+            self.h=self.h+1
+
+        print('\nAlgoritmo finalizado')
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
     #-----CRUCE----
     def cruce(self,individuo):
-        # print('individuo antes del cruce')
-        # print(individuo)
-        # print()
 
         fit=[]
 
         punto = random.randint(0,len(individuo[0])-2)
         auxList = individuo.copy()
-
-        # print(f'punto {punto} y lista auxiliar {auxList}\n')
         
         individuo[0][punto+1:] = auxList[1][punto+1:]
         individuo[1][punto+1:] = auxList[0][punto+1:]
-
-        # for i in range(0,len(auxList[0])):
             
-            # if i == punto:
-            #     print(f'punto{punto}, i {i}')
-            #     continue
-            # else:
-
-                # individuo[0][i] = auxList[1][i]
-                # individuo[1][i] = auxList[0][i]
-                # print(f'individuo {individuo}')
-            
-        fit.append(self.objetivo(individuo[0],self.coeficientes,self.independientes))
-        fit.append(self.objetivo(individuo[1],self.coeficientes,self.independientes))
+        fit.append(self.objetivo(individuo[0]))
+        fit.append(self.objetivo(individuo[1]))
 
         fit , individuo = self.sort(fit,individuo)
-        # print('individuo despues del cruce')
-        # print(individuo)
-        # print()
         return fit, individuo
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
     #---MUTACION---
     def mutacion(self,individuos,fit):
-        # print(f'individuo antes de mutado: {individuos}')
-        # print(f'fit, antes de la mutacion : {fit}')
-        # print()
         individuo = random.randint(0,len(individuos)-1)
         alelo = random.randint(0,len(individuos[0])-1)
         mutado = random.uniform(self.varRange[0],self.varRange[1])
         individuos[individuo][alelo] = mutado
-        fit[individuo] = self.objetivo(individuos[individuo],self.coeficientes,self.independientes)
+        fit[individuo] = self.objetivo(individuos[individuo])
 
         fit , individuos = self.sort(fit,individuos)
-        # print(f'individuo despues de mutado punto (individuo:{individuo}),(alelo:{alelo}) : {individuos}')
-        # print(f'fit, luego de la mutacion : {fit}')
-        # print()
         return fit, individuos
 
 
@@ -255,21 +173,28 @@ class Gen3x3:
     #---Representacion como string de los atributos de la clase---
     def __str__(self):
 
-        str = [f'Variables del objeto gen3x3: \n',
-            #    f'Matriz coeficientes:\n {self.coeficientes} \n',
-            #    f'Matriz terminos independientes: \n{self.independientes} \n',
-               f'Matriz de poblacion: \n{self.poblacion}\n',
-               f'Fitness: \n{self.fitList} \n',
-               f'Rango de las variables: {self.varRange} \n',
-               f'Tamaño poblacion: {self.populationSize} \n',
-               f'Cantidad de variables: {self.varSize} \n',
-               f'Presicion: {self.presicion} \n',
-               f'Porcentaje de mutacion: {self.pm} \n',
-               f'Porcentaje de cruce: {self.pc} \n',
-               f'Epocas: {self.epocas} \n'
-               f'Padres por elitismo y torneos: {self.padres} \n',
-               f'poblacion temporal: {self.tempPob} \n',
-               f'fit temporal: {self.tempFitList} \n',   
+        str = [f'El mejor individuo es: {self.poblacion[0]}\n'
+               f'Su presicion es del {self.fitList[0]}%\n'
+               f'Epocas computadas: {self.h}'
+        
         ]
+
+        #STRING DE DESARROLLO Y MONITOREO DE ATRIBUTOS
+        # str = [f'Variables del objeto gen3x3: \n',
+        #     #    f'Matriz coeficientes:\n {self.coeficientes} \n',
+        #     #    f'Matriz terminos independientes: \n{self.independientes} \n',
+        #        f'Matriz de poblacion: \n{self.poblacion}\n',
+        #        f'Fitness: \n{self.fitList} \n',
+        #        f'Rango de las variables: {self.varRange} \n',
+        #        f'Tamaño poblacion: {self.populationSize} \n',
+        #        f'Cantidad de variables: {self.varSize} \n',
+        #        f'Presicion: {self.presicion} \n',
+        #        f'Porcentaje de mutacion: {self.pm} \n',
+        #        f'Porcentaje de cruce: {self.pc} \n',
+        #        f'Epocas: {self.epocas} \n'
+        #        f'Padres por elitismo y torneos: {self.padres} \n',
+        #        f'poblacion temporal: {self.tempPob} \n',
+        #        f'fit temporal: {self.tempFitList} \n',   
+        # ]
 
         return "\n".join(str)
