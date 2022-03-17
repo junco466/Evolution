@@ -7,7 +7,6 @@ class Gen:
     #---constructor de la clase Gen3x3---
     def __init__(self):
         
-        self.init = True
         self.populationSize = 0
         self.varSize = 0 
         self.varRange = []
@@ -46,18 +45,6 @@ class Gen:
         dependentList = dependentList[ind]
 
         return independentList,dependentList
-
-#-------------------------------------------------------------------------------------------------------------------------------------        
-
-    #---Llenado de la lista fitness---
-    def fitness(self,objetivo):
-        if self.init:
-            for genotipo in self.poblacion:
-                self.fitList.append(objetivo(genotipo))
-                self.init = False
-        else:
-            for genotipo in self.tempPob:
-                self.tempFitList.append(objetivo(genotipo))
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
@@ -137,13 +124,14 @@ class Gen:
 
     #---ALGORITMO GENETICO PRINCIPAL---
     def start(self):
-        self.fitness(self.objetivo)
+        for genotipo in self.poblacion:
+                self.fitList.append(self.objetivo(genotipo))
         self.fitList, self.poblacion = self.sort(self.fitList,self.poblacion)
         print('Algoritmo Corriendo.....\n')
 
         while self.fitList[0] > self.presicion and self.h < self.epocas:
             
-            if (self.h)%10 == 0:
+            if (self.h)%50 == 0:
                     print(f'Epocas {self.h}')
                     print('.........')
 
