@@ -1,9 +1,8 @@
-from ftplib import all_errors
 import numpy as np
 import random
 
 
-class Gen3x3:
+class Gen:
 
     #---constructor de la clase Gen3x3---
     def __init__(self):
@@ -101,39 +100,6 @@ class Gen3x3:
             self.tempPob.append(self.poblacion[i])
             self.tempFitList.append(self.fitList[i])
 
-#-------------------------------------------------------------------------------------------------------------------------------------        
-
-    #---Loop del algoritmo genetico---
-    def start(self):
-        self.fitness(self.objetivo)
-        self.fitList, self.poblacion = self.sort(self.fitList,self.poblacion)
-        print('Algoritmo Corriendo.....\n')
-
-        while self.fitList[0] > self.presicion and self.h < self.epocas:
-            
-            if (self.h)%100 == 0:
-                    print('.........')
-
-            self.elite()
-            while len(self.tempPob) < len(self.poblacion):
-
-                fit,individuo = self.tounament()
-
-                if random.random() <= self.pc:
-                    fit ,individuo = self.cruce(individuo)
-                    if random.random() <= self.pm:
-                        fit,individuo= self.mutacion(individuo,fit)
-                for i in range(0,len(fit)):
-                    self.tempPob.append(individuo[i])
-                    self.tempFitList.append(fit[i])
-
-            self.fitList, self.poblacion = self.sort(self.tempFitList,self.tempPob)
-            self.tempPob = []
-            self.tempFitList = []
-
-            self.h=self.h+1
-
-        print('\nAlgoritmo finalizado')
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
@@ -167,6 +133,40 @@ class Gen3x3:
         fit , individuos = self.sort(fit,individuos)
         return fit, individuos
 
+#-------------------------------------------------------------------------------------------------------------------------------------        
+
+    #---ALGORITMO GENETICO PRINCIPAL---
+    def start(self):
+        self.fitness(self.objetivo)
+        self.fitList, self.poblacion = self.sort(self.fitList,self.poblacion)
+        print('Algoritmo Corriendo.....\n')
+
+        while self.fitList[0] > self.presicion and self.h < self.epocas:
+            
+            if (self.h)%10 == 0:
+                    print(f'Epocas {self.h}')
+                    print('.........')
+
+            self.elite()
+            while len(self.tempPob) < len(self.poblacion):
+
+                fit,individuo = self.tounament()
+
+                if random.random() <= self.pc:
+                    fit ,individuo = self.cruce(individuo)
+                    if random.random() <= self.pm:
+                        fit,individuo= self.mutacion(individuo,fit)
+                for i in range(0,len(fit)):
+                    self.tempPob.append(individuo[i])
+                    self.tempFitList.append(fit[i])
+
+            self.fitList, self.poblacion = self.sort(self.tempFitList,self.tempPob)
+            self.tempPob = []
+            self.tempFitList = []
+
+            self.h=self.h+1
+
+        print('\nAlgoritmo finalizado')
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
 
@@ -174,7 +174,7 @@ class Gen3x3:
     def __str__(self):
 
         str = [f'El mejor individuo es: {self.poblacion[0]}\n'
-               f'Su presicion es del {self.fitList[0]}%\n'
+               f'Su tolerancia es del {self.fitList[0]}%\n'
                f'Epocas computadas: {self.h}'
         
         ]
