@@ -4,7 +4,7 @@ import random
 
 class Gen:
 
-    #---constructor de la clase Gen3x3---
+    #---constructor de la clase Gen---
     def __init__(self):
         
         self.populationSize = 0
