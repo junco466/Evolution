@@ -21,7 +21,7 @@ def PID(individuo):
 if __name__ == '__main__':
   
     ecuacion = Gen()
-    ecuacion.populationSize = 50
+    ecuacion.populationSize = 10
     ecuacion.varSize = 3
     ecuacion.presicion = 0.2
     ecuacion.varRange = [-10,10]

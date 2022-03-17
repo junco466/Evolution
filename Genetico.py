@@ -128,6 +128,8 @@ class Gen:
                 self.fitList.append(self.objetivo(genotipo))
         self.fitList, self.poblacion = self.sort(self.fitList,self.poblacion)
         print('Algoritmo Corriendo.....\n')
+        print('POBLACION INICAL:')
+        print(self.poblacion)
 
         while self.fitList[0] > self.presicion and self.h < self.epocas:
             
@@ -154,6 +156,8 @@ class Gen:
 
             self.h=self.h+1
 
+        print('POBLACION FINAL: ')
+        print(self.poblacion)
         print('\nAlgoritmo finalizado')
 
 #-------------------------------------------------------------------------------------------------------------------------------------        
