@@ -1,25 +1,6 @@
-import numpy as np
 from Genetico import Gen
 from control.matlab import *
-from more_itertools import sort_together
 import matplotlib.pyplot as plt
-
-# def objetivo(geno,coef,inde):
-        
-#         height, width = np.shape(coef)
-#         fit = 0
-
-#         for i in range(height):
-#             aux = 0
-#             for j in range(width):
-#                 aux = aux + (geno[j] * coef[i][j])
-#                 #print(f'geno{geno[j]}')
-            
-#             #print(f'auxiliar{aux}')
-#             #print(f'independiente i{self.independientes[i]}')
-#             fit = fit + abs((inde[i] - aux))
-            
-#         return fit  
 
 def PID(individuo):
     
@@ -36,15 +17,9 @@ def PID(individuo):
         fit = fit + abs(y_base[i]-y[i])
     
     return fit
-    
-    # e=abs(yi - yc);
-    # a = sum(e);
-
 
 if __name__ == '__main__':
   
-   #prueba = np.array([4.643,0.821,2.250])
-    #Configuracion del algoritmo
     ecuacion = Gen()
     ecuacion.populationSize = 50
     ecuacion.varSize = 3
@@ -64,8 +39,6 @@ if __name__ == '__main__':
         t.append(aux)
         aux = aux + 0.02   
         
-    # planta = tf([5,2],[1, 5, 8, 4])
-    # pid_base = tf([13.0447, 37.6692, 18.9251],[1, 0])
     planta = tf([10],[1, 2, 10])
     pid_base = tf([12.0918, 8.4047, 17.1467],[1, 0])
     sys_serie_base = series(pid_base,planta)
@@ -73,11 +46,6 @@ if __name__ == '__main__':
     y_base,t1 = step(sys_cloop_base,t) #Salida base
 
     ecuacion.objetivo = PID
-    #ecuacion.fitness(objetivo)
-    
-
-    
-
     ecuacion.start()
 
     print(ecuacion)
@@ -88,10 +56,6 @@ if __name__ == '__main__':
     sys_serie=series(pid,planta)
     sys_cloop=feedback(sys_serie,1)
     step_final,t2=step(sys_cloop,t)
-
-    # print(f'tamaño base {len(y_base)} t1: {len(t1)}')
-    # print(f'tamaño final {len(step_final)} t1: {len(t2)}')
-
 
     #Graficas
     fig = plt.figure("Respuesta")
@@ -111,9 +75,3 @@ if __name__ == '__main__':
     plt.title(u"Respuesta planta calculada")
     plt.xlabel("segundos")
     plt.show()
-    
-    # print('yi: ')
-    # print(yi)
-    # print(len(yi))
-    # print('t: ')
-    # print(t)
